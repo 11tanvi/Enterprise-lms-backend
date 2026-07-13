@@ -20,6 +20,7 @@ import { StudentDashboard } from "./modules/assignments/pages/student/StudentDas
 import { CourseCatalogPage } from "./modules/courses/pages/CourseCatalogPage";
 import { AssignmentAttempt } from "./modules/assignments/pages/student/AssignmentAttempt";
 import { ResultPage } from "./modules/assignments/pages/student/ResultPage";
+import { StudentCertificatePage } from "./modules/certificates/pages/StudentCertificatePage";
 import { BatchDashboard } from "./modules/batches/pages/BatchDashboard";
 import { BatchDetails } from "./modules/batches/pages/BatchDetails";
 import { CreateBatchWizard } from "./modules/batches/pages/CreateBatchWizard";
@@ -231,6 +232,15 @@ const AppContent: React.FC = () => {
             element={
               <ProtectedRoute allowedRoles={["student"]}>
                 <ResultPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/student/certificate/:submissionId"
+            element={
+              <ProtectedRoute allowedRoles={["student"]}>
+                <StudentCertificatePage />
               </ProtectedRoute>
             }
           />

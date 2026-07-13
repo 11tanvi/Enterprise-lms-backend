@@ -34,7 +34,9 @@ export const batchService = {
    * Fetch details of a specific batch belonging to the authenticated student
    */
   async getStudentBatch(batchId: string | number): Promise<Batch> {
-    const response = await apiClient.get<Batch>(`/batches/student/me/${batchId}`);
+    const response = await apiClient.get<Batch>(
+      `/batches/student/me/${batchId}`,
+    );
     return response.data;
   },
 
@@ -50,7 +52,9 @@ export const batchService = {
    * Fetch batches belonging to a specific course
    */
   async getByCourseId(courseId: string | number): Promise<Batch[]> {
-    const response = await apiClient.get<Batch[]>(`/batches/course/${courseId}`);
+    const response = await apiClient.get<Batch[]>(
+      `/batches/course/${courseId}`,
+    );
     return response.data;
   },
 
@@ -80,15 +84,23 @@ export const batchService = {
   /**
    * Add a student to a batch
    */
-  async addStudent(batchId: string | number, studentId: string | number): Promise<BatchStudent> {
-    const response = await apiClient.post<BatchStudent>(`/batches/${batchId}/students/${studentId}`);
+  async addStudent(
+    batchId: string | number,
+    studentId: string | number,
+  ): Promise<BatchStudent> {
+    const response = await apiClient.post<BatchStudent>(
+      `/batches/${batchId}/students/${studentId}`,
+    );
     return response.data;
   },
 
   /**
    * Remove a student from a batch
    */
-  async removeStudent(batchId: string | number, studentId: string | number): Promise<void> {
+  async removeStudent(
+    batchId: string | number,
+    studentId: string | number,
+  ): Promise<void> {
     await apiClient.delete(`/batches/${batchId}/students/${studentId}`);
   },
 
@@ -101,6 +113,16 @@ export const batchService = {
   },
 
   /**
+   * Export students in a batch to Excel
+   */
+  async exportStudents(batchId: string | number): Promise<Blob> {
+    const response = await apiClient.get(`/export/batch/${batchId}`, {
+      responseType: "blob",
+    });
+    return response.data;
+  },
+
+  /**
    * Fetch users filtered by role (e.g. STUDENT)
    */
   async getStudentsByRole(role: string = "STUDENT"): Promise<any[]> {
@@ -108,7 +130,7 @@ export const batchService = {
       params: { role },
     });
     return response.data;
-  }
+  },
 };
 
 export default batchService;

@@ -18,15 +18,12 @@ import {
   Printer,
   EyeOff,
 } from "lucide-react";
-import { toPng } from "html-to-image";
-import { jsPDF } from "jspdf";
 import { useApp } from "../../../../context/AppContext";
 import { Assignment, Submission, Answer, Question } from "../../types";
 import { ResultCard } from "../../shared/ResultCard";
 import { useAuthenticatedQuery } from "../../api/useAuthenticatedQuery";
 import { assignmentService } from "../../api/assignmentService";
 import { useStudentAssignments } from "../../hooks/useStudentAssignments";
-import { CertificateTemplate } from "../../../certificates/components/CertificateTemplate";
 
 // Seeded deterministic pseudo-random number generator & shuffle utilities
 const getSeedFromString = (str: string): number => {
@@ -80,8 +77,6 @@ export const ResultPage: React.FC = () => {
   const [activeSubmission, setActiveSubmission] = useState<Submission | null>(
     null,
   );
-  const [isCertificateOpen, setIsCertificateOpen] = useState(false);
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [expandedQuestions, setExpandedQuestions] = useState<
     Record<string, boolean>
   >({});
@@ -91,39 +86,6 @@ export const ResultPage: React.FC = () => {
       ...prev,
       [questionId]: !prev[questionId],
     }));
-  };
-
-  const backdropRef = useRef<HTMLDivElement>(null);
-
-  // Prevent background scrolling while certificate modal is open
-  useEffect(() => {
-    if (isCertificateOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isCertificateOpen]);
-
-  // Handle ESC key press to close modal
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isCertificateOpen) {
-        setIsCertificateOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isCertificateOpen]);
-
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === backdropRef.current) {
-      setIsCertificateOpen(false);
-    }
   };
 
   const rawSubmission = useMemo(() => {
@@ -292,79 +254,6 @@ Report generated on: ${new Date().toLocaleString()}
     showToast("Downloaded report sheet successfully.", "success");
   };
 
-  const handleDownloadPDF = async () => {
-    const element = document.getElementById("certificate-container");
-    if (!element) {
-      showToast("Certificate element not found on screen.", "error");
-      return;
-    }
-
-    setIsGeneratingPdf(true);
-    showToast("Generating high-fidelity PDF, please wait...", "info");
-
-    // Temporarily reset styles to capture at pristine full A4 scale (1123x794 px)
-    const originalTransform = element.style.transform;
-    const originalPosition = element.style.position;
-
-    element.style.transform = "scale(1)";
-    element.style.position = "static";
-
-    try {
-      // Use html-to-image to convert the DOM node directly to a high-resolution PNG.
-      // This is extremely reliable compared to html2canvas because html-to-image
-      // extracts computed element styles directly and packages them into an SVG foreignObject,
-      // completely bypassing the manual CSS stylesheet parsing that crashes on modern features like oklab/oklch.
-      const imgData = await toPng(element, {
-        quality: 0.98,
-        pixelRatio: 2.0, // Ensures excellent visual fidelity on A4 canvas
-        backgroundColor: "#ffffff",
-        cacheBust: true,
-        width: 1123,
-        height: 794,
-      });
-
-      // Restore original scale styles immediately after image generation
-      element.style.transform = originalTransform;
-      element.style.position = originalPosition;
-
-      const pdf = new jsPDF({
-        orientation: "landscape",
-        unit: "mm",
-        format: "a4",
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-
-      pdf.addImage(
-        imgData,
-        "PNG",
-        0,
-        0,
-        pdfWidth,
-        pdfHeight,
-        undefined,
-        "FAST",
-      );
-
-      const fileName = `Certificate_${(activeSubmission?.studentName || "Student").replace(/\s+/g, "_")}_${assignment.title.replace(/\s+/g, "_")}.pdf`;
-      pdf.save(fileName);
-      showToast("Certificate downloaded successfully.", "success");
-    } catch (error) {
-      // Restore original styles in case of error
-      element.style.transform = originalTransform;
-      element.style.position = originalPosition;
-
-      console.error("PDF generation failed:", error);
-      showToast(
-        "Failed to download PDF. Please try again or print instead.",
-        "error",
-      );
-    } finally {
-      setIsGeneratingPdf(false);
-    }
-  };
-
   // Render Live Grading Simulator
   if (isGradingSimulated) {
     return (
@@ -418,7 +307,9 @@ Report generated on: ${new Date().toLocaleString()}
           {shouldShowResult &&
             (isEligibleForCertificate ? (
               <button
-                onClick={() => setIsCertificateOpen(true)}
+                onClick={() =>
+                  navigate(`/student/certificate/${activeSubmission.id}`)
+                }
                 className="inline-flex items-center gap-2 px-4 py-2 bg-[#6C1D5F] hover:bg-[#541449] text-white text-xs font-semibold rounded-md shadow-2xs transition-all cursor-pointer"
                 id="view-certificate-btn"
               >
@@ -927,176 +818,6 @@ Report generated on: ${new Date().toLocaleString()}
           >
             Attempt Assessment Now
           </button>
-        </div>
-      )}
-
-      {/* Certificate Modal Overlay */}
-      {isCertificateOpen && activeSubmission && (
-        <div
-          ref={backdropRef}
-          onClick={handleBackdropClick}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto"
-        >
-          {/* Print Style Injector */}
-          <style>{`
-            @media print {
-              body * {
-                visibility: hidden !important;
-              }
-              #print-certificate-wrapper, #print-certificate-wrapper * {
-                visibility: visible !important;
-              }
-              #print-certificate-wrapper {
-                position: fixed !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 297mm !important;
-                height: 210mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                border: none !important;
-                background: white !important;
-                z-index: 9999999 !important;
-                display: block !important;
-              }
-              #certificate-print-area {
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 297mm !important;
-                height: 210mm !important;
-                display: block !important;
-              }
-              #certificate-print-area > div {
-                width: 297mm !important;
-                height: 210mm !important;
-                display: block !important;
-              }
-              #certificate-container {
-                width: 297mm !important;
-                height: 210mm !important;
-                min-width: 297mm !important;
-                max-width: 297mm !important;
-                margin: 0 !important;
-                border: none !important;
-                box-shadow: none !important;
-                transform: none !important;
-                position: static !important;
-                display: block !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }
-              @page {
-                size: A4 landscape;
-                margin: 0;
-              }
-            }
-          `}</style>
-
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-[950px] w-full p-6 border border-gray-150">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-              <div className="flex items-center gap-2 text-[#6C1D5F]">
-                <Award className="w-5 h-5 text-[#01AC9F] animate-pulse" />
-                <div>
-                  <h3 className="font-display font-extrabold text-black uppercase tracking-wider text-xs">
-                    Academy of Excellence
-                  </h3>
-                  <p className="text-[10px] text-gray-400 font-mono mt-0.5">
-                    Secure Credential Verification Portal
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsCertificateOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
-              >
-                <XCircle className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Certificate Template Canvas */}
-            <div
-              id="print-certificate-wrapper"
-              className="w-full overflow-x-auto rounded-lg border border-gray-100 bg-gray-50/50 p-2 flex justify-center"
-            >
-              <CertificateTemplate
-                studentName={activeSubmission.studentName}
-                assignmentTitle={
-                  activeSubmission.assignmentTitle || assignment.title
-                }
-                courseTitle={assignment.courseTitle}
-                teacherName={assignment.teacherName || "Course Instructor"}
-                obtainedMarks={activeSubmission.score || 0}
-                totalMarks={
-                  activeSubmission.totalMarks || assignment.totalMarks
-                }
-                percentage={
-                  activeSubmission.percentage ||
-                  (activeSubmission.score
-                    ? (activeSubmission.score / assignment.totalMarks) * 100
-                    : 0)
-                }
-                completionDate={activeSubmission.submittedAt}
-                certificateId={activeSubmission.id}
-                badgeImage={
-                  (activeSubmission.percentage ||
-                    (activeSubmission.score
-                      ? (activeSubmission.score / assignment.totalMarks) * 100
-                      : 0)) >= 90
-                    ? "gold"
-                    : (activeSubmission.percentage ||
-                          (activeSubmission.score
-                            ? (activeSubmission.score / assignment.totalMarks) *
-                              100
-                            : 0)) >= 75
-                      ? "silver"
-                      : "bronze"
-                }
-                verificationUrl={`https://verify.xebia.com/${activeSubmission.id}`}
-              />
-            </div>
-
-            {/* Modal Footer Controls */}
-            <div className="flex justify-between items-center mt-5 pt-4 border-t border-gray-100">
-              <p className="text-[10px] font-mono text-gray-400">
-                CREDENTIAL ID:{" "}
-                <span className="font-semibold text-[#6C1D5F]">
-                  {activeSubmission.id}
-                </span>
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={handleDownloadPDF}
-                  disabled={isGeneratingPdf}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-md shadow-3xs cursor-pointer transition-all ${
-                    isGeneratingPdf
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-[#01AC9F] hover:bg-[#008F84] text-white"
-                  }`}
-                >
-                  {isGeneratingPdf ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Download className="w-3.5 h-3.5" />
-                  )}
-                  {isGeneratingPdf ? "Generating PDF..." : "Download PDF"}
-                </button>
-                <button
-                  onClick={() => window.print()}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-[#5A5A5A] hover:text-black text-xs font-semibold rounded-md shadow-3xs cursor-pointer transition-all"
-                >
-                  <Printer className="w-3.5 h-3.5" />
-                  Print Certificate
-                </button>
-                <button
-                  onClick={() => setIsCertificateOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-md transition-all cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
     </div>

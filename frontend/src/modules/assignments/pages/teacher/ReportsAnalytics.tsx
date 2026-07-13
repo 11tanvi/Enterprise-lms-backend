@@ -22,12 +22,14 @@ import {
   CheckCircle,
   Mail,
   Calendar,
+  X,
 } from "lucide-react";
 import { useApp } from "../../../../context/AppContext";
 import { useAuthenticatedQuery } from "../../api/useAuthenticatedQuery";
 import { assignmentService } from "../../api/assignmentService";
 import { useMutation } from "@tanstack/react-query";
 import { Assignment, Submission, Answer } from "../../types";
+import apiClient from "../../../../lib/apiClient";
 
 export const ReportsAnalytics: React.FC = () => {
   const navigate = useNavigate();
@@ -127,7 +129,14 @@ export const ReportsAnalytics: React.FC = () => {
     // Batch filtering requires matching assignment batch, but submission doesn't have batch directly. We check assignment.
     if (submissionFilter.batchName !== "All") {
       const a = safeAssignments.find((a) => a.id === s.assignmentId);
-      if (!a || !(a.assignedBatchNames && a.assignedBatchNames.includes(submissionFilter.batchName))) return false;
+      if (
+        !a ||
+        !(
+          a.assignedBatchNames &&
+          a.assignedBatchNames.includes(submissionFilter.batchName)
+        )
+      )
+        return false;
     }
     return true;
   });
@@ -138,6 +147,58 @@ export const ReportsAnalytics: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [showExportModal, setShowExportModal] = useState(false);
+
+  // Export Assignment Results States
+  const [isDownloadingExport, setIsDownloadingExport] = useState(false);
+  const [showExportResultsModal, setShowExportResultsModal] = useState(false);
+  const [selectedExportAssignmentId, setSelectedExportAssignmentId] =
+    useState<string>("All");
+  const [exportFileFormat, setExportFileFormat] = useState<"xlsx" | "csv">(
+    "xlsx",
+  );
+
+  const handleExportAssignmentResults = async (assignmentId: string) => {
+    if (!assignmentId || assignmentId === "All") {
+      showToast("Please select a specific assignment to export.", "error");
+      return;
+    }
+    setIsDownloadingExport(true);
+    showToast("Preparing your assignment results export...", "info");
+    try {
+      const response = await apiClient.get(
+        `/export/assignment/${assignmentId}`,
+        {
+          responseType: "blob",
+        },
+      );
+      const blob = new Blob([response.data], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+
+      const targetAssignment = safeAssignments.find(
+        (asg) => asg.id === assignmentId,
+      );
+      const assignmentTitle = targetAssignment?.title || "Assignment";
+      const sanitizedName = assignmentTitle.replace(/[^a-zA-Z0-9]/g, "_");
+      a.download = `${sanitizedName}_Results.xlsx`;
+
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+      showToast("Assignment results exported successfully!", "success");
+      setShowExportResultsModal(false);
+    } catch (err: any) {
+      console.error(err);
+      showToast("Failed to export assignment results.", "error");
+    } finally {
+      setIsDownloadingExport(false);
+    }
+  };
   const [cohortPerformance, setCohortPerformance] = useState([
     {
       id: "cohort-1",
@@ -769,7 +830,9 @@ export const ReportsAnalytics: React.FC = () => {
               <option value="All">All Batches</option>
               {Array.from(
                 new Set(
-                  safeAssignments.flatMap((a) => a.assignedBatchNames || []).filter(Boolean),
+                  safeAssignments
+                    .flatMap((a) => a.assignedBatchNames || [])
+                    .filter(Boolean),
                 ),
               ).map((b) => (
                 <option key={b} value={b}>
@@ -793,6 +856,22 @@ export const ReportsAnalytics: React.FC = () => {
                 className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 focus:bg-white focus:outline-none focus:border-[#6C1D5F] rounded-lg text-xs placeholder-gray-400 transition-all"
               />
             </div>
+
+            <button
+              onClick={() => {
+                setSelectedExportAssignmentId(
+                  submissionFilter.assignmentId !== "All"
+                    ? submissionFilter.assignmentId
+                    : safeAssignments[0]?.id || "All",
+                );
+                setShowExportResultsModal(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#01AC9F] hover:bg-[#008f84] text-white text-xs font-semibold rounded-lg transition-all cursor-pointer shadow-3xs"
+              id="export-assignment-results-btn"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              Export Results
+            </button>
           </div>
         </div>
 
@@ -822,21 +901,34 @@ export const ReportsAnalytics: React.FC = () => {
               <tbody className="divide-y divide-gray-100 text-xs text-gray-700">
                 {filteredSubmissionsList.map((sub) => {
                   const isGraded = sub.status === "Graded";
-                  const assignmentObj = safeAssignments.find((a) => a.id === sub.assignmentId);
+                  const assignmentObj = safeAssignments.find(
+                    (a) => a.id === sub.assignmentId,
+                  );
                   const studentSubmissions = safeSubmissions.filter(
-                    (s) => s.assignmentId === sub.assignmentId && s.studentId === sub.studentId
+                    (s) =>
+                      s.assignmentId === sub.assignmentId &&
+                      s.studentId === sub.studentId,
                   );
                   const completedSubs = studentSubmissions.filter(
-                    (s) => s.status === "Submitted" || s.status === "Graded"
+                    (s) => s.status === "Submitted" || s.status === "Graded",
                   );
                   const attemptsUsed = completedSubs.length;
 
                   const maxAttemptsVal = assignmentObj?.maxAttempts;
-                  const maxAttempts = (maxAttemptsVal === "No limit" || maxAttemptsVal === null || maxAttemptsVal === undefined)
-                    ? null
-                    : (isNaN(Number(maxAttemptsVal)) || Number(maxAttemptsVal) <= 0 ? null : Number(maxAttemptsVal));
+                  const maxAttempts =
+                    maxAttemptsVal === "No limit" ||
+                    maxAttemptsVal === null ||
+                    maxAttemptsVal === undefined
+                      ? null
+                      : isNaN(Number(maxAttemptsVal)) ||
+                          Number(maxAttemptsVal) <= 0
+                        ? null
+                        : Number(maxAttemptsVal);
 
-                  const attemptsRemaining = maxAttempts === null ? "Unlimited" : Math.max(0, maxAttempts - attemptsUsed);
+                  const attemptsRemaining =
+                    maxAttempts === null
+                      ? "Unlimited"
+                      : Math.max(0, maxAttempts - attemptsUsed);
 
                   return (
                     <tr key={sub.id} className="hover:bg-gray-50/40">
@@ -911,7 +1003,10 @@ export const ReportsAnalytics: React.FC = () => {
                   className="border border-gray-150 rounded-xl p-4 bg-gray-50/50"
                 >
                   <p className="text-xs font-bold text-gray-900 mb-2">
-                    {idx + 1}. {ans.questionTitle || `Q: ${ans.frontendType || ans.questionType}`} ({ans.maxMarks || 0} Marks)
+                    {idx + 1}.{" "}
+                    {ans.questionTitle ||
+                      `Q: ${ans.frontendType || ans.questionType}`}{" "}
+                    ({ans.maxMarks || 0} Marks)
                   </p>
                   {(ans.parsedPrompt || ans.questionPrompt) && (
                     <div className="text-xs text-gray-700 mb-3 bg-gray-50 p-2 rounded whitespace-pre-wrap">
@@ -924,7 +1019,8 @@ export const ReportsAnalytics: React.FC = () => {
                   (ans.frontendType || ans.questionType) === "FileUpload" ? (
                     <div className="space-y-4">
                       <div className="bg-white p-3 rounded border border-gray-200 text-xs whitespace-pre-wrap">
-                        {(ans.frontendType || ans.questionType) === "FileUpload" ? (
+                        {(ans.frontendType || ans.questionType) ===
+                        "FileUpload" ? (
                           <div className="flex items-center gap-2">
                             <Download className="w-4 h-4" />{" "}
                             <a
@@ -937,7 +1033,12 @@ export const ReportsAnalytics: React.FC = () => {
                             </a>
                           </div>
                         ) : (
-                          ans.essayText || ans.shortAnswerText || <span className="text-gray-400 italic">No answer provided</span>
+                          ans.essayText ||
+                          ans.shortAnswerText || (
+                            <span className="text-gray-400 italic">
+                              No answer provided
+                            </span>
+                          )
                         )}
                       </div>
 
@@ -988,7 +1089,11 @@ export const ReportsAnalytics: React.FC = () => {
                   ) : (ans.frontendType || ans.questionType) === "Coding" ? (
                     <div className="space-y-4">
                       <div className="bg-[#1e1e1e] text-white p-3 rounded border border-gray-700 text-xs font-mono overflow-x-auto whitespace-pre-wrap">
-                        {ans.codingSubmission?.code || <span className="text-gray-500 italic">No code submitted</span>}
+                        {ans.codingSubmission?.code || (
+                          <span className="text-gray-500 italic">
+                            No code submitted
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex gap-4">
@@ -1038,24 +1143,37 @@ export const ReportsAnalytics: React.FC = () => {
                   ) : (
                     <div className="space-y-4">
                       {ans.options && ans.options.length > 0 && (
-                         <div className="space-y-2 mt-2">
-                           {ans.options.map((opt, oIdx) => (
-                              <div key={oIdx} className={`p-2 rounded text-xs border ${opt.isCorrect ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'} ${ans.selectedOptionId === opt.id ? 'ring-2 ring-[#6C1D5F] shadow-sm' : ''}`}>
-                                 <span className="font-bold mr-2">{String.fromCharCode(65 + oIdx)}.</span>
-                                 {opt.optionText}
-                                 {opt.isCorrect && <span className="ml-2 text-green-600 font-bold">(Correct)</span>}
-                                 {ans.selectedOptionId === opt.id && <span className="ml-2 text-[#6C1D5F] font-bold">(Student Selected)</span>}
-                              </div>
-                           ))}
-                         </div>
+                        <div className="space-y-2 mt-2">
+                          {ans.options.map((opt, oIdx) => (
+                            <div
+                              key={oIdx}
+                              className={`p-2 rounded text-xs border ${opt.isCorrect ? "bg-green-50 border-green-200" : "bg-white border-gray-100"} ${ans.selectedOptionId === opt.id ? "ring-2 ring-[#6C1D5F] shadow-sm" : ""}`}
+                            >
+                              <span className="font-bold mr-2">
+                                {String.fromCharCode(65 + oIdx)}.
+                              </span>
+                              {opt.optionText}
+                              {opt.isCorrect && (
+                                <span className="ml-2 text-green-600 font-bold">
+                                  (Correct)
+                                </span>
+                              )}
+                              {ans.selectedOptionId === opt.id && (
+                                <span className="ml-2 text-[#6C1D5F] font-bold">
+                                  (Student Selected)
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       )}
                       {!ans.options || ans.options.length === 0 ? (
                         <p className="text-xs font-mono bg-white p-2 border border-gray-100 rounded">
-                          {ans.selectedOptionText 
+                          {ans.selectedOptionText
                             ? `Selected Option: ${ans.selectedOptionText}`
                             : ans.mcqSelectedIndex !== undefined
-                            ? `Selected Option Index: ${ans.mcqSelectedIndex}`
-                            : "No answer"}
+                              ? `Selected Option Index: ${ans.mcqSelectedIndex}`
+                              : "No answer"}
                         </p>
                       ) : null}
                       <div className="mt-3 flex gap-4">
@@ -1162,6 +1280,138 @@ export const ReportsAnalytics: React.FC = () => {
                 className="flex-1 py-2.5 bg-[#01AC9F] hover:bg-[#008f84] text-white text-xs font-bold rounded-md cursor-pointer transition-all active:scale-95 disabled:opacity-50"
               >
                 Download Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Assignment Results Dialog */}
+      {showExportResultsModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 w-full max-w-md border border-gray-200 shadow-2xl animate-fade-in flex flex-col space-y-5">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-display font-black text-black">
+                  Export Assignment Results
+                </h3>
+                <p className="text-xs text-gray-400">
+                  Select assignment and configure your export report.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowExportResultsModal(false)}
+                className="text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Select Assignment */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono text-gray-400 font-extrabold uppercase tracking-wider block">
+                  Select Assignment
+                </label>
+                <select
+                  value={selectedExportAssignmentId}
+                  onChange={(e) =>
+                    setSelectedExportAssignmentId(e.target.value)
+                  }
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-250 rounded-xl text-xs font-medium outline-none focus:border-[#6C1D5F] transition-colors"
+                >
+                  <option value="All" disabled>
+                    -- Choose an Assignment --
+                  </option>
+                  {safeAssignments.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Format selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono text-gray-400 font-extrabold uppercase tracking-wider block">
+                  Export Format
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setExportFileFormat("xlsx")}
+                    className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
+                      exportFileFormat === "xlsx"
+                        ? "bg-[#01AC9F]/5 border-[#01AC9F] text-[#01AC9F]"
+                        : "bg-white border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    <span>Excel (.xlsx)</span>
+                    <CheckCircle
+                      className={`w-4 h-4 ${exportFileFormat === "xlsx" ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled
+                    className="p-3 rounded-xl border border-dashed border-gray-250 text-gray-300 text-xs font-medium flex flex-col items-start justify-center cursor-not-allowed bg-gray-50/50"
+                  >
+                    <span className="font-semibold text-gray-400">
+                      CSV Format
+                    </span>
+                    <span className="text-[9px] font-mono text-[#FF6200] mt-0.5 uppercase tracking-wide">
+                      Coming Soon
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Columns Included Summary */}
+              <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 space-y-2">
+                <span className="text-[9px] font-mono text-gray-400 font-extrabold uppercase tracking-wider block">
+                  Columns Included in Export
+                </span>
+                <p className="text-[11px] text-gray-500 leading-relaxed font-sans">
+                  Roll Number, Student Name, Email, Assignment, Batch, Score,
+                  Percentage, Grade, Status, Attempts, Late Submission,
+                  Certificate Issued, and Submitted At.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowExportResultsModal(false)}
+                disabled={isDownloadingExport}
+                className="flex-1 py-2.5 border border-gray-250 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-50 cursor-pointer disabled:opacity-50 transition-colors"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  handleExportAssignmentResults(selectedExportAssignmentId)
+                }
+                disabled={
+                  isDownloadingExport || selectedExportAssignmentId === "All"
+                }
+                className="flex-1 py-2.5 bg-[#6C1D5F] hover:bg-[#541449] disabled:bg-gray-200 disabled:text-gray-400 text-white text-xs font-bold rounded-xl cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+              >
+                {isDownloadingExport ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Exporting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download Excel</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
