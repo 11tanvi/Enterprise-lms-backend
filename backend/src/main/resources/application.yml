@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: geeknito-backend
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local} # Defaults to local development profile
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# Server port and context path configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+# CORS allowed origins config
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+jwt:
+  secret: ${JWT_SECRET:9a2f98282d3d32757514324d882de524a9a081571d5b14bc751d3b3648e23547} # At least 256 bits for HS256
+  expiration: ${JWT_EXPIRATION:86400000} # 24 hours in ms (1 day)
+
+app:
+  file-download-base-url: ${APP_FILE_DOWNLOAD_BASE_URL:http://localhost:8080/api/v1}
+
+# Spring Boot Actuator Configuration for health, info, and metrics tracking
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always # Shows detailed DB and Redis check information
+      probes:
+        enabled: true # Exposes standard Kubernetes/Render liveness & readiness probes

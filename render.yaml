@@ -1,0 +1,15 @@
+# Render Blueprint Configuration (Infrastructure-as-Code)
+# Learn more at: https://render.com/docs/blueprints
+
+services:
+  - type: static_site
+    name: lms-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    routes:
+      # Catch-all rewrite rule for Single Page Applications (SPA)
+      # Rewrites all unmatched requests to /index.html, allowing React Router to handle deep links
+      - source: /*
+        destination: /index.html
+        type: rewrite

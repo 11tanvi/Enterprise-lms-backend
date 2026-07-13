@@ -1,0 +1,44 @@
+spring:
+  # Database Configuration for staging (strictly matching production parameters)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: HikariPool-Staging
+      maximum-pool-size: 20
+      minimum-idle: 10
+      idle-timeout: 30000
+      connection-timeout: 20000
+
+  # JPA & Hibernate Settings (Validation only, no updates allowed)
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use_sql_comments: false
+        generate_statistics: false
+
+  # Flyway Configuration for staging
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: "1"
+
+  # Redis Configuration for staging caching
+  data:
+    redis:
+      url: ${SPRING_REDIS_URL:${REDIS_URL}}
+      timeout: 3000
+
+# Logging Configurations for staging (structured, high-performance)
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    com.geeknito.geeknito_backend: INFO

@@ -1,0 +1,3307 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>
+      EduCorp LMS — Complete System &amp; Feature Technical Documentation
+    </title>
+    <!-- Load Inter font for clean professional typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #4f46e5; /* Indigo */
+        --primary-hover: #4338ca;
+        --secondary: #0ea5e9; /* Sky Blue */
+        --accent: #f43f5e; /* Rose */
+        --neutral-dark: #1e293b; /* Slate 800 */
+        --neutral-light: #f8fafc; /* Slate 50 */
+        --border-color: #e2e8f0; /* Slate 200 */
+        --text-main: #334155; /* Slate 700 */
+        --text-muted: #64748b; /* Slate 500 */
+        --code-bg: #1e1e2e; /* Deep dark color for code snippets */
+        --code-text: #cdd6f4;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        color: var(--text-main);
+        background-color: #f1f5f9;
+        line-height: 1.6;
+        display: flex;
+      }
+
+      /* Sidebar Table of Contents styling */
+      aside {
+        width: 320px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        background-color: var(--neutral-dark);
+        color: #fff;
+        padding: 30px 20px;
+        overflow-y: auto;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+      }
+
+      aside h1 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        margin-bottom: 5px;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      aside p {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 30px;
+        font-weight: 500;
+      }
+
+      aside h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 12px;
+        letter-spacing: 0.1em;
+        border-bottom: 1px solid #334155;
+        padding-bottom: 5px;
+      }
+
+      aside ul {
+        list-style-type: none;
+        margin-bottom: 25px;
+      }
+
+      aside li {
+        margin-bottom: 8px;
+      }
+
+      aside a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s ease-in-out;
+        display: block;
+        padding: 5px 8px;
+        border-radius: 4px;
+      }
+
+      aside a:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+      }
+
+      /* Main Content panel */
+      main {
+        flex-grow: 1;
+        padding: 40px 50px 100px;
+        max-width: calc(100vw - 320px);
+        overflow-x: hidden;
+        background-color: #ffffff;
+      }
+
+      .meta-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 40px;
+      }
+
+      .meta-bar h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--neutral-dark);
+        letter-spacing: -0.025em;
+      }
+
+      .badge {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid #bae6fd;
+      }
+
+      .section-card {
+        background-color: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 35px;
+        margin-bottom: 50px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        scroll-margin-top: 40px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        color: var(--neutral-dark);
+        margin-bottom: 25px;
+        font-weight: 700;
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      h3 {
+        font-size: 1.125rem;
+        color: var(--neutral-dark);
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      p {
+        margin-bottom: 15px;
+        color: var(--text-main);
+        font-size: 0.95rem;
+      }
+
+      /* Mermaid blocks styling */
+      .mermaid {
+        background-color: var(--neutral-light);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        overflow-x: auto;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Execution flows formatting */
+      pre {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        background-color: var(--code-bg);
+        color: var(--code-text);
+        padding: 20px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 20px 0;
+        border: 1px solid #2d3139;
+        line-height: 1.5;
+      }
+
+      code {
+        font-family: "JetBrains Mono", monospace;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+      }
+
+      pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+      }
+
+      /* Lists styling */
+      ul,
+      ol {
+        margin-left: 20px;
+        margin-bottom: 20px;
+      }
+
+      li {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: var(--text-main);
+      }
+
+      li strong {
+        color: var(--neutral-dark);
+      }
+
+      /* Custom blocks */
+      .info-block {
+        background-color: #f0fdf4;
+        border-left: 4px solid #16a34a;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        margin: 20px 0;
+      }
+
+      .warning-block {
+        background-color: #fffbeb;
+        border-left: 4px solid #d97706;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        margin: 20px 0;
+      }
+
+      /* Table styling with sticky header */
+      .table-container {
+        overflow-x: auto;
+        margin: 20px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.875rem;
+      }
+
+      th,
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: top;
+      }
+
+      th {
+        background-color: #f8fafc;
+        color: var(--neutral-dark);
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:nth-child(even) {
+        background-color: #fafbfd;
+      }
+
+      /* Back to top links */
+      .back-to-top {
+        display: inline-block;
+        margin-top: 15px;
+        font-size: 0.8rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+      }
+
+      .back-to-top:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      /* Header link styling */
+      .anchor-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      h2:hover .anchor-link {
+        opacity: 1;
+      }
+
+      /* Pure CSS Flowchart Styling */
+      .flowchart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        margin: 30px auto;
+        padding: 30px;
+        background-color: var(--neutral-light);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        max-width: 100%;
+      }
+
+      .flowchart-row {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 20px;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .flowchart-node {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-top: 4px solid var(--primary);
+        border-radius: 10px;
+        padding: 16px 20px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        min-width: 220px;
+        max-width: 340px;
+        flex: 1 1 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: default;
+      }
+
+      .flowchart-node:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 12px 20px -3px rgba(79, 70, 229, 0.12),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary);
+      }
+
+      .flowchart-node.backend {
+        border-top-color: var(--secondary);
+      }
+
+      .flowchart-node.backend:hover {
+        box-shadow:
+          0 12px 20px -3px rgba(14, 165, 233, 0.12),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: var(--secondary);
+      }
+
+      .flowchart-node.database {
+        border-top-color: var(--accent);
+      }
+
+      .flowchart-node.database:hover {
+        box-shadow:
+          0 12px 20px -3px rgba(244, 63, 94, 0.12),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border-color: var(--accent);
+      }
+
+      .flowchart-node .node-type {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        letter-spacing: 0.08em;
+      }
+
+      .flowchart-node .node-path {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--neutral-dark);
+        word-break: break-all;
+        margin-bottom: 8px;
+        font-weight: 600;
+        background-color: #f8fafc;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+      }
+
+      .flowchart-node .node-action {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-main);
+        line-height: 1.4;
+      }
+
+      .flowchart-arrow {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 1.25rem;
+        user-select: none;
+        padding: 4px 12px;
+        gap: 4px;
+      }
+
+      .flowchart-arrow.vertical {
+        width: 100%;
+        height: auto;
+        margin: 4px 0;
+      }
+
+      .flowchart-arrow.horizontal {
+        height: auto;
+        flex-direction: row;
+      }
+
+      .flowchart-label {
+        font-size: 0.7rem;
+        color: #0369a1;
+        font-weight: 600;
+        background-color: #f0fdf4;
+        padding: 2px 8px;
+        border-radius: 12px;
+        border: 1px solid #bbf7d0;
+        margin-top: 2px;
+        white-space: nowrap;
+      }
+
+      @media print {
+        body {
+          background-color: #fff;
+          color: #000;
+        }
+        aside {
+          display: none;
+        }
+        main {
+          max-width: 100%;
+          padding: 0;
+        }
+        .section-card {
+          box-shadow: none;
+          border: none;
+          padding: 0;
+          margin-bottom: 40px;
+          page-break-inside: avoid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LEFT SIDEBAR TOC -->
+    <aside>
+      <h1>EduCorp LMS</h1>
+      <p>Technical Documentation Portal</p>
+
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#feature-1">1. User Auth &amp; Authorization</a></li>
+        <li><a href="#feature-2">2. Category Management</a></li>
+        <li><a href="#feature-3">3. Course Catalog &amp; Discovery</a></li>
+        <li><a href="#feature-4">4. Course Creation Wizard</a></li>
+        <li><a href="#feature-5">5. Curriculum Management</a></li>
+        <li><a href="#feature-6">6. Content &amp; Lesson Management</a></li>
+        <li><a href="#feature-7">7. File &amp; Media Upload System</a></li>
+        <li><a href="#feature-8">8. Redis Caching Strategy</a></li>
+        <li><a href="#feature-9">9. Hybrid Mock / Live DB Engine</a></li>
+      </ul>
+
+      <h2>Tech Stack Overview</h2>
+      <div style="font-size: 0.75rem; color: #94a3b8; line-height: 1.4">
+        <p style="margin-bottom: 5px">
+          <strong>Frontend:</strong> React, Vite, TS, TanStack Query, Axios,
+          Tailwind CSS
+        </p>
+        <p style="margin-bottom: 5px">
+          <strong>Backend:</strong> Spring Boot, Spring Security, Data JPA,
+          PostgreSQL, Redis, Cloudinary
+        </p>
+      </div>
+    </aside>
+
+    <!-- MAIN DOCUMENTATION -->
+    <main>
+      <div class="meta-bar">
+        <div>
+          <h1>EduCorp LMS Developer Portal</h1>
+          <p style="color: var(--text-muted); margin-top: 5px">
+            Full-Stack Feature &amp; Engineering Specifications
+          </p>
+        </div>
+        <span class="badge">v1.2.0-STABLE</span>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 1 -->
+      <!-- ========================================== -->
+      <section id="feature-1" class="section-card">
+        <h2>1. User Authentication &amp; Authorization</h2>
+        <p>
+          Provides complete registration, secure login, and role-based
+          validation routines using stateless token keys. It defines and
+          protects user paths, segregating administrator utilities from basic
+          student viewports.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend Guards & Context -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Guard</div>
+              <div class="node-path">
+                frontend/src/components/ProtectedRoute.tsx
+              </div>
+              <div class="node-action">
+                Checks AppContext userRole &amp; wraps view routes
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Consumes</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Context</div>
+              <div class="node-path">frontend/src/context/AppContext.tsx</div>
+              <div class="node-action">
+                Holds currentUser auth state and local storage profiles
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Updates</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Page</div>
+              <div class="node-path">frontend/src/pages/Login.tsx</div>
+              <div class="node-action">
+                User submits login form, initiating flow
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Dispatches Call</span>
+          </div>
+
+          <!-- Row 2: Frontend Service -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">frontend/src/services/authService.ts</div>
+              <div class="node-action">
+                Executes API POST request to /auth/login
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >HTTP POST (JSON credentials payload)</span
+            >
+          </div>
+
+          <!-- Row 3: Backend Controller & Repository -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.user.controller.AuthController
+              </div>
+              <div class="node-action">
+                login(LoginRequest) verifies credentials &amp; issues mock JWT
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Queries</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repository</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.user.repository.UserRepository
+              </div>
+              <div class="node-action">
+                Interface for PostgreSQL user table access
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">SQL Query</span>
+          </div>
+
+          <!-- Row 4: Database Storage -->
+          <div class="flowchart-row">
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Table: users</div>
+              <div class="node-action">
+                Stores id, email, password_hash, full_name, role, is_active
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+User Inputs Email/Password in UI &lt;Login /&gt; (frontend/src/pages/Login.tsx)
+↓
+React submits form -&gt; triggers handleSubmit() (frontend/src/pages/Login.tsx)
+↓
+Calls authService.login(email, password) (frontend/src/services/authService.ts)
+↓
+Axios client posts credentials to "/auth/login"
+↓
+Spring Boot interceptor passes to AuthController.login(LoginRequest) (backend/src/main/java/com/geeknito/geeknito_backend/user/controller/AuthController.java)
+↓
+AuthController queries UserRepository.findByEmail(email) (backend/src/main/java/com/geeknito/geeknito_backend/user/repository/UserRepository.java)
+↓
+If user exists and password matches, checks if user.isActive()
+↓
+Generates mock JWT Token ("educorp-jwt-token-stub-{userId}")
+↓
+Returns 200 OK with AuthResponse DTO (id, fullName, email, role, token)
+↓
+authService captures, stores profile in AppContext (frontend/src/context/AppContext.tsx) &amp; LocalStorage ("educorp_user_profile")
+↓
+AppContext sets state currentUser and userRole ("admin" | "student") (frontend/src/context/AppContext.tsx)
+↓
+Fires React success toast: "Welcome back, {fullName}!"
+↓
+Navigates programmatically to "/courses" via react-router-dom useNavigate()
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>RuntimeException</code> if user is not found or credentials
+            are invalid. Throws custom authorization exceptions if account is
+            deactivated.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li><code>200 OK</code>: Successful authentication.</li>
+              <li><code>201 Created</code>: Registration completed.</li>
+              <li>
+                <code>400 Bad Request</code>: Input validation failure (empty
+                fields, short passwords).
+              </li>
+              <li>
+                <code>401 Unauthorized</code>: Invalid credentials (password
+                mismatch).
+              </li>
+              <li>
+                <code>403 Forbidden</code>: Deactivated user attempts to sign
+                in.
+              </li>
+              <li>
+                <code>409 Conflict</code>: User registration attempts with email
+                already registered in the DB.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>
+                Success: <em>"Welcome back, [Name]!"</em> /
+                <em>"Account successfully created for [Name]!"</em>
+              </li>
+              <li>
+                Error: <em>"Invalid credentials. User does not exist."</em> /
+                <em>"This user account has been deactivated."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> Not applicable to credentials
+            submission. Client must manually correct input.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>JWT Authentication:</strong> Utilizes stateless auth keys
+            embedded inside HTTP Request <code>Authorization</code> Header as
+            Bearer token values.
+          </li>
+          <li>
+            <strong>Spring Security:</strong> Backend processes incoming
+            filters. Permitted paths include <code>/api/v1/auth/**</code>, while
+            other API operations require validated token authentication.
+          </li>
+          <li>
+            <strong>Protected Routes (Frontend):</strong> React paths wrapped
+            inside <code>&lt;ProtectedRoute&gt;</code> within
+            <span class="file-badge">frontend/src/App.tsx</span>.
+          </li>
+          <li>
+            <strong>Role Checks:</strong> Routes specifying
+            <code>allowedRoles={["admin"]}</code> block students from accessing
+            Category management or Course authoring views, redirecting them back
+            to the Catalog page.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/src/main/java/com/geeknito/geeknito_backend/user/controller/AuthController.java</code
+                  >
+                </td>
+                <td><code>login(@RequestBody LoginRequest)</code></td>
+                <td>
+                  Receives user inputs, sanitizes strings, compares credentials,
+                  and generates JWT payload.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/src/main/java/com/geeknito/geeknito_backend/user/controller/AuthController.java</code
+                  >
+                </td>
+                <td><code>register(@RequestBody RegisterRequest)</code></td>
+                <td>
+                  Handles signup logic, normalizes email inputs, hashes inputs,
+                  and saves User records.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontend/src/components/ProtectedRoute.tsx</code></td>
+                <td><code>ProtectedRoute({ children, allowedRoles })</code></td>
+                <td>
+                  A wrapper guarding React components against unauthorized
+                  layout rendering.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontend/src/services/authService.ts</code></td>
+                <td><code>login(email, password)</code></td>
+                <td>
+                  Performs client-side POST to trigger authentication endpoints
+                  and retrieve session keys.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/auth/login</code></td>
+                <td><code>LoginRequest</code> (email, password)</td>
+                <td><code>AuthResponse</code> (profile DTO + token)</td>
+                <td>None</td>
+                <td>Logs user session and returns authenticated payload.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/auth/register</code></td>
+                <td>
+                  <code>RegisterRequest</code> (fullName, email, password)
+                </td>
+                <td><code>AuthResponse</code> (profile DTO + token)</td>
+                <td>None</td>
+                <td>
+                  If email string contains word "admin", promotes role to Admin.
+                  Otherwise, defaults to Student.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>PostgreSQL DB Store:</strong> Real-time user records are
+            stored and mapped against <code>users</code> table.
+          </li>
+          <li>
+            <strong>AppContext React Brain:</strong> Shared React context holds
+            current user profile references and coordinates login/logout state
+            changes globally.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>BCrypt Password Encoding:</strong> Implement Spring
+            Security’s <code>BCryptPasswordEncoder</code> on passwords, as
+            current demo hashes values using simple equality operations.
+          </li>
+          <li>
+            <strong>JWT Real Verification:</strong> Convert the current token
+            stub system into fully signed cryptographic JWT signatures (using
+            HMACS / RS256 algorithms).
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>
+            Fully validates student and admin account credentials on PostgreSQL.
+          </li>
+          <li>
+            Secures front-end paths using responsive
+            <code>&lt;ProtectedRoute&gt;</code> components.
+          </li>
+          <li>
+            Provides custom automated role promotion if email contains the
+            substring "admin".
+          </li>
+          <li>
+            Persists active states inside browser LocalStorage for consistent
+            browser restarts.
+          </li>
+          <li>
+            Integrates cleanly with central state to fire customized welcome
+            greeting toasts.
+          </li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 2 -->
+      <!-- ========================================== -->
+      <section id="feature-2" class="section-card">
+        <h2>2. Category Management</h2>
+        <p>
+          Allows system administrators to manage the taxonomy of the LMS.
+          Categories categorize courses and specify color formats and icon
+          classes used by course discovery pages.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Page</div>
+              <div class="node-path">
+                frontend/src/pages/CategoryManagement.tsx
+              </div>
+              <div class="node-action">
+                Coordinates list display, deletion triggers &amp; creation forms
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Dispatches</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">
+                frontend/src/services/categoryService.ts
+              </div>
+              <div class="node-action">
+                Axios requests targeting the backend /categories endpoint
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >HTTP POST (JSON Category data payload)</span
+            >
+          </div>
+
+          <!-- Row 2: Backend Controller & Service -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.category.controller.CategoryAdminController
+              </div>
+              <div class="node-action">
+                create(CategoryRequestDTO) entry endpoint returning
+                ResponseEntity
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Invokes</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.category.service.CategoryAdminServiceImpl
+              </div>
+              <div class="node-action">
+                Converts request, manages evictions, saves Category Entity
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Saves with Repository</span>
+          </div>
+
+          <!-- Row 3: Repository & DB -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repository</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.category.repository.CategoryRepository
+              </div>
+              <div class="node-action">
+                Fires custom queries with native SQL joins for course counts
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Table: categories</div>
+              <div class="node-action">
+                Persists category nodes (name, description, color, icon,
+                is_active)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Admin submits Category form in &lt;CategoryManagement /&gt; (frontend/src/pages/CategoryManagement.tsx)
+↓
+React Query mutation triggers categoryService.create(payload) (frontend/src/services/categoryService.ts)
+↓
+Axios sends POST to "/categories" with { name, description, icon, colorHex }
+↓
+Spring Boot CategoryAdminController.createCategory() receives payload (backend/src/main/java/com/geeknito/geeknito_backend/category/controller/CategoryAdminController.java)
+↓
+Delegates to CategoryAdminServiceImpl to convert DTO to CategoryEntity via MapStruct mapper (backend/src/main/java/com/geeknito/geeknito_backend/category/service/CategoryAdminServiceImpl.java)
+↓
+Checks database to prevent category name duplication
+↓
+Saves CategoryEntity through CategoryRepository.save() (backend/src/main/java/com/geeknito/geeknito_backend/category/repository/CategoryRepository.java)
+↓
+Returns 211 Created response back to Axios client containing CategoryResponseDTO
+↓
+React Query onSuccess hook intercepts response, triggers queryClient.invalidateQueries(["categories"])
+↓
+Frontend view is re-rendered to displays newly-created Category row (frontend/src/pages/CategoryManagement.tsx)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>EntityExistsException</code> on category name duplications.
+            Throws <code>EntityNotFoundException</code> on updates against
+            non-existent Category IDs.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li><code>200 OK</code>: Successful search or updates.</li>
+              <li><code>201 Created</code>: Category created.</li>
+              <li><code>400 Bad Request</code>: Input format invalid.</li>
+              <li><code>409 Conflict</code>: Duplicated category names.</li>
+              <li>
+                <code>204 No Content</code>: Soft delete executed successfully.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>
+                Success: <em>"Category created successfully!"</em> /
+                <em>"Category updated!"</em>
+              </li>
+              <li>
+                Error:
+                <em
+                  >"Failed to create category: Name already exists in our
+                  database."</em
+                >
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> Managed by React Query's default GET
+            query retry mechanics (3 attempts with exponential backoff on
+            network issues).
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Role Restriction:</strong> Admin operations
+            (POST/PUT/DELETE) are locked behind Admin credentials on both client
+            and server layers.
+          </li>
+          <li>
+            <strong>Public Fetching:</strong> Students can access categories via
+            the public <code>/api/v1/categories</code> endpoint to support
+            filtering, but cannot execute modification requests.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../category/controller/CategoryAdminController.java</code
+                  >
+                </td>
+                <td>
+                  <code>createCategory(@RequestBody CategoryRequestDTO)</code>
+                </td>
+                <td>
+                  Receives admin requests, validates attributes, and triggers
+                  Service.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../category/service/CategoryAdminServiceImpl.java</code
+                  >
+                </td>
+                <td><code>softDelete(Long id)</code></td>
+                <td>
+                  Marks the target category's `is_active` flag to false in the
+                  database.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../category/repository/CategoryRepository.java</code
+                  >
+                </td>
+                <td><code>findByIdWithCourseCount(Long id)</code></td>
+                <td>
+                  Custom JPA query calculating aggregate course counts per
+                  category.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/v1/categories</code></td>
+                <td>None</td>
+                <td><code>List&lt;CategoryResponseDTO&gt;</code></td>
+                <td>Bearer Token</td>
+                <td>
+                  Returns all active categories with their calculated course
+                  counts.
+                </td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/categories</code></td>
+                <td><code>CategoryRequestDTO</code></td>
+                <td><code>CategoryResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Adds category. Throws 409 if name already exists.</td>
+              </tr>
+              <tr>
+                <td><code>DELETE</code></td>
+                <td><code>/api/v1/categories/{id}</code></td>
+                <td>None</td>
+                <td>Void (204)</td>
+                <td>Bearer (Admin)</td>
+                <td>Executes soft-delete by setting is_active=false.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Spring Security Role Gates:</strong> Admin categories
+            controller endpoints rely on role-based access tokens.
+          </li>
+          <li>
+            <strong>Lucide React Icons:</strong> Frontend queries Lucide names
+            stored inside categories database records to dynamically instantiate
+            SVG elements on screen.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Icon Selection Palette:</strong> Add an interactive SVG
+            icon-selector modal in the category wizard so Admins don't have to
+            manually type the Lucide string.
+          </li>
+          <li>
+            <strong>Relational Warning checks:</strong> Prevent soft deletions
+            if a category has active courses linked to it.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>
+            Supports full category CRUD operations secured by role checks.
+          </li>
+          <li>Calculates relational course totals per category.</li>
+          <li>
+            Utilizes custom CSS-friendly styling parameters (icon strings and
+            colorHexes).
+          </li>
+          <li>
+            Features a soft deletion system that keeps historical database
+            entries intact.
+          </li>
+          <li>
+            Optimized with automatic frontend caching invalidation on updates.
+          </li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 3 -->
+      <!-- ========================================== -->
+      <section id="feature-3" class="section-card">
+        <h2>3. Course Catalog &amp; Discovery</h2>
+        <p>
+          Provides the primary landing page of the application, rendering a
+          beautiful searchable grid of courses with responsive category filter
+          chips, dynamic statistics (total courses, difficulty levels), and a
+          detailed route segments mapping view.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Page</div>
+              <div class="node-path">
+                frontend/src/components/CourseCatalogView.tsx
+              </div>
+              <div class="node-action">
+                Assembles bento filter board and maps catalog course nodes
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Fetches</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">
+                frontend/src/services/courseService.ts
+              </div>
+              <div class="node-action">
+                Performs parallel fetches for active courses &amp; active
+                categories
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >HTTP GET /admin/courses (Checks Caching Layers First)</span
+            >
+          </div>
+
+          <!-- Row 2: Backend Controller & Service -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.controller.CourseCatalogController
+              </div>
+              <div class="node-action">
+                getCatalogCourses() returns pageable responses of light DTOs
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Invokes</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.service.CourseCatalogServiceImpl
+              </div>
+              <div class="node-action">
+                @Cacheable("course-catalog") check. Hits Redis or falls back to
+                database
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Queries DB on Cache Miss</span>
+          </div>
+
+          <!-- Row 3: Repository & DB -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repository</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.repository.CourseRepository
+              </div>
+              <div class="node-action">
+                Queries active courses with sorting &amp; pagination
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Table: courses</div>
+              <div class="node-action">
+                Retrieves persistent course rows (slug, thumbnail, level,
+                duration)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+User accesses "/" or "/courses" -&gt; Catalog view mounts (frontend/src/components/CourseCatalogView.tsx)
+↓
+useEffect launches asynchronous API dispatch using Promise.all() (frontend/src/components/CourseCatalogView.tsx)
+↓
+Fetches all active courses AND available categories in parallel (frontend/src/services/courseService.ts and frontend/src/services/categoryService.ts)
+↓
+Axios dispatches HTTP GET requests to "/admin/courses" and "/categories"
+↓
+CourseCatalogController captures requests (backend/src/main/java/com/geeknito/geeknito_backend/course/controller/CourseCatalogController.java), queries CourseRepository.findByIsActiveTrue() (backend/src/main/java/com/geeknito/geeknito_backend/course/repository/CourseRepository.java)
+↓
+Returns List of CourseCatalogCardDTO arrays containing Course metadata
+↓
+React state sets active catalog payload lists on response success (frontend/src/components/CourseCatalogView.tsx)
+↓
+App calculates difficulty level stats (Beginner, Intermediate, Advanced) and displays metrics
+↓
+Search and chips filters filter the matching course records client-side
+↓
+Maps remaining Course items to generate responsive &lt;CourseCard /&gt; list elements (frontend/src/components/CourseCard.tsx)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>ResourceNotFoundException</code> if slug queries yield no
+            matching course records.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li><code>200 OK</code>: Course data successfully retrieved.</li>
+              <li>
+                <code>404 Not Found</code>: No course matches the requested slug
+                ID.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>
+                Error:
+                <em>"Failed to load course details. Course not found."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> Public searches do not auto-retry.
+            Network catalog loading errors will prompt users to click an
+            interactive re-fetch button on the layout.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Access Rules:</strong> Public catalog pages are accessible
+            to any signed-in user, whether they are Students or Admins.
+          </li>
+          <li>
+            <strong>Admin Dropdowns:</strong> Dynamic options context buttons
+            (Edit, Delete, Manage) on CourseCard widgets are visible only if
+            <code>userRole === "admin"</code>.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/CourseCatalogController.java</code
+                  >
+                </td>
+                <td><code>getCatalog()</code></td>
+                <td>
+                  Returns all published courses active in the Postgres system.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/service/CourseCatalogServiceImpl.java</code
+                  >
+                </td>
+                <td><code>getCourseDetailBySlug(String slug)</code></td>
+                <td>
+                  Loads detailed course records, including nested modules,
+                  mapped by URL slugs.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code>frontend/src/components/CourseCatalogView.tsx</code>
+                </td>
+                <td><code>fetchCatalogData()</code></td>
+                <td>
+                  Consolidates backend requests in parallel to fetch metadata
+                  records.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/v1/admin/courses</code></td>
+                <td>None</td>
+                <td><code>List&lt;CourseResponseDTO&gt;</code></td>
+                <td>Bearer Token</td>
+                <td>
+                  Returns all courses currently registered in the database.
+                </td>
+              </tr>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/v1/courses/slug/{slug}</code></td>
+                <td>None</td>
+                <td><code>CourseCatalogDetailDTO</code></td>
+                <td>Bearer Token</td>
+                <td>
+                  Queries and loads deep module curriculum tree records mapped
+                  by slug properties.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Category Taxonomy API:</strong> Course cards rely on
+            category models to fetch tags, icons, and color styles.
+          </li>
+          <li>
+            <strong>React Router Engine:</strong> Dynamic slug transitions
+            depend on URL parameters configured in <code>App.tsx</code>.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Database Paginated Scrolling:</strong> Replace client-side
+            catalog filtering with Spring Boot Pageable queries for scalable
+            query performance on large catalogs.
+          </li>
+          <li>
+            <strong>Fuzzy Search:</strong> Integrate Postgres full-text indexing
+            or dynamic ILIKE queries to handle typo-tolerant title lookups.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>Implements a responsive search index and category filters.</li>
+          <li>
+            Displays calculated statistics for difficulty levels and course
+            counts.
+          </li>
+          <li>Resolves detailed views dynamically using URL slugs.</li>
+          <li>
+            Features conditional rendering of admin controls based on user
+            roles.
+          </li>
+          <li>Uses lazy load modules to optimize catalog image loading.</li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 4 -->
+      <!-- ========================================== -->
+      <section id="feature-4" class="section-card">
+        <h2>4. Course Creation Wizard</h2>
+        <p>
+          A multi-step React-driven wizard that allows Admins to create new
+          courses incrementally. Step 1 focuses on drafting course details,
+          immediately saving a draft to the database to generate an ID for
+          subsequent curriculum steps.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Wizard Container</div>
+              <div class="node-path">
+                frontend/src/components/CourseWizard/CourseWizardParent.tsx
+              </div>
+              <div class="node-action">
+                Manages wizard progress, Step 1-3 mounts, and persistent states
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Mounts</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Wizard Step 1</div>
+              <div class="node-path">
+                frontend/src/components/CourseWizard/WizardStep1.tsx
+              </div>
+              <div class="node-action">
+                Assembles core metadata form &amp; triggers auto-saving on
+                complete
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Submits draft details</span>
+          </div>
+
+          <!-- Row 2: Frontend Service & Controller -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">
+                frontend/src/services/courseService.ts
+              </div>
+              <div class="node-action">
+                Issues POST /admin/courses request to record the draft
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Dispatches</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.controller.CourseAdminController
+              </div>
+              <div class="node-action">
+                create(CourseRequestDTO) interceptor mapping. Emits 201 Created
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Saves Draft Entity</span>
+          </div>
+
+          <!-- Row 3: Service & Database -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.service.CourseAdminServiceImpl
+              </div>
+              <div class="node-action">
+                Persists the CourseEntity draft to assign a database-generated
+                ID
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Table: courses</div>
+              <div class="node-action">
+                Saves title, slug, description, level, duration, and sets
+                isActive=true
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Admin clicks "+ New Course" -&gt; App redirects to "/wizard" (frontend/src/components/CourseWizard/WizardStep1.tsx mounts)
+↓
+Admin inputs course title -&gt; Form listener triggers regex slugification (e.g. "Cloud Ops" -&gt; "cloud-ops") (frontend/src/components/CourseWizard/WizardStep1.tsx)
+↓
+Admin completes Step 1 fields (category, description, level, thumbnail)
+↓
+Clicks "Continue" -&gt; Triggers handlesNextStep() in CourseWizardParent (frontend/src/components/CourseWizard/CourseWizardParent.tsx)
+↓
+Performs client-side validations. On success, executes handleSaveDraftSilent()
+↓
+If wizardCourseId is empty, dispatches POST request to "/admin/courses" via courseService.create() (frontend/src/services/courseService.ts)
+↓
+CourseAdminController maps payload into a new CourseEntity draft (backend/src/main/java/com/geeknito/geeknito_backend/course/controller/CourseAdminController.java)
+↓
+Saves draft to Postgres through CourseRepository (backend/src/main/java/com/geeknito/geeknito_backend/course/repository/CourseRepository.java) and returns CourseResponseDTO with a generated database ID
+↓
+Wizard parent captures the new ID, saving it to AppContext state (frontend/src/context/AppContext.tsx) and LocalStorage ("educorp_wizard_id")
+↓
+Saves current step (Step 2) in LocalStorage and switches view to Curriculum Step (frontend/src/components/CourseWizard/CourseWizardParent.tsx)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>DataIntegrityViolationException</code> if slug is not unique.
+            Throws <code>MethodArgumentNotValidException</code> if required
+            fields are missing.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li><code>201 Created</code>: New course draft generated.</li>
+              <li><code>400 Bad Request</code>: Missing required fields.</li>
+              <li>
+                <code>409 Conflict</code>: URL slug already registered in the
+                database.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>Success: <em>"Course draft saved successfully!"</em></li>
+              <li>
+                Error: <em>"Please fill in all required fields."</em> /
+                <em>"This slug is already taken. Please customize it."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> Auto-saves are silent. If the API
+            returns an error, the wizard blocks step transition, keeping current
+            form progress intact.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Route Guarding:</strong> The `/wizard` and `/wizard/:id`
+            routes are wrapped in role gates, allowing access only to users with
+            an `"admin"` role.
+          </li>
+          <li>
+            <strong>Backend Controller Security:</strong> Endpoints matching
+            <code>/api/v1/admin/courses/**</code> are protected by Spring
+            Security filters.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code>frontend/.../CourseWizard/CourseWizardParent.tsx</code>
+                </td>
+                <td><code>handleSaveDraftSilent()</code></td>
+                <td>
+                  Saves wizard progress to the database, updating or creating
+                  drafts.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontend/.../CourseWizard/WizardStep1.tsx</code></td>
+                <td><code>autoSlugify()</code></td>
+                <td>
+                  Generates URL-safe strings from titles using regex in
+                  real-time.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/CourseAdminController.java</code
+                  >
+                </td>
+                <td>
+                  <code>createCourse(@RequestBody CourseRequestDTO)</code>
+                </td>
+                <td>
+                  Receives new course metadata, mapping and saving drafts.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/admin/courses</code></td>
+                <td><code>CourseRequestDTO</code></td>
+                <td><code>CourseResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Saves a new course draft. Generates a database ID.</td>
+              </tr>
+              <tr>
+                <td><code>PUT</code></td>
+                <td><code>/api/v1/admin/courses/{id}</code></td>
+                <td><code>CourseRequestDTO</code></td>
+                <td><code>CourseResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Updates course metadata and settings.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Category Service API:</strong> Populates the parent category
+            dropdown with active categories from the database.
+          </li>
+          <li>
+            <strong>LocalStorage Persistence:</strong> Restores draft progress
+            if the Admin reloads the browser during creation.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Auto-Save Debounce:</strong> Auto-save draft changes in the
+            background when the admin pauses typing.
+          </li>
+          <li>
+            <strong>Slug Collision Resolution:</strong> Append auto-incrementing
+            random suffixes to slugs if collisions are detected.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>Ensures smooth multi-step state management on the client.</li>
+          <li>Auto-generates URL slugs from titles.</li>
+          <li>
+            Saves drafts to the database during Step 1 to secure course IDs.
+          </li>
+          <li>
+            Restores wizard progress on browser reloads using LocalStorage.
+          </li>
+          <li>Secures authoring workflows behind strict Admin role gates.</li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 5 -->
+      <!-- ========================================== -->
+      <section id="feature-5" class="section-card">
+        <h2>5. Curriculum Management</h2>
+        <p>
+          Step 2 of the course wizard. Allows Admins to build out the course
+          structure by managing Modules (chapters) and Submodules (individual
+          lessons).
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Wizard Step 2</div>
+              <div class="node-path">
+                frontend/src/components/CourseWizard/WizardStep2.tsx
+              </div>
+              <div class="node-action">
+                Interactive curriculum builder managing sections &amp; lectures
+                list
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Dispatches</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">
+                frontend/src/services/curriculumService.ts
+              </div>
+              <div class="node-action">
+                Axios updates to /admin/courses/{id}/modules endpoints
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >HTTP POST Payload (Hierarchy details)</span
+            >
+          </div>
+
+          <!-- Row 2: Backend Controller & Service -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.controller.CurriculumAdminController
+              </div>
+              <div class="node-action">
+                Handles createModule() &amp; createSubmodule() mapping routes
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Invokes</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.service.CurriculumAdminServiceImpl
+              </div>
+              <div class="node-action">
+                Maps hierarchical objects, commits, and evicts related caches
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Persists with Repositories</span>
+          </div>
+
+          <!-- Row 3: Repository & DB -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repositories</div>
+              <div class="node-path">
+                ModuleRepository &amp; SubmoduleRepository
+              </div>
+              <div class="node-action">
+                Database access interfaces mapping entities
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Tables: modules, submodules</div>
+              <div class="node-action">
+                Persists records bound together by relational integrity
+                constraints
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Admin views Curriculum Step 2 (frontend/src/components/CourseWizard/WizardStep2.tsx), loading the current outline
+↓
+React Query executes getCourseCurriculum(courseId) via curriculumService.getCourseCurriculum() (frontend/src/services/curriculumService.ts) to load modules from database
+↓
+Admin clicks "+ Add Module", inputs title and description (frontend/src/components/CourseWizard/WizardStep2.tsx)
+↓
+Form submissions trigger curriculumService.createModule() (frontend/src/services/curriculumService.ts)
+↓
+Axios posts metadata to "/admin/courses/{courseId}/modules"
+↓
+CurriculumAdminController receives payload (backend/src/main/java/com/geeknito/geeknito_backend/course/controller/CurriculumAdminController.java) and passes to CurriculumAdminServiceImpl (backend/src/main/java/com/geeknito/geeknito_backend/course/service/CurriculumAdminServiceImpl.java)
+↓
+Service maps DTO fields and saves ModuleEntity via ModuleRepository.save() (backend/src/main/java/com/geeknito/geeknito_backend/course/repository/ModuleRepository.java)
+↓
+Returns 211 Created response with ModuleResponseDTO
+↓
+React Query onSuccess hook invalidates ["curriculum", courseId] key
+↓
+Component re-renders list, displaying the new Module outline row (frontend/src/components/CourseWizard/WizardStep2.tsx)
+↓
+Adding Submodules triggers a similar flow under the path "/modules/{moduleId}/submodules" targeting SubmoduleRepository (backend/src/main/java/com/geeknito/geeknito_backend/course/repository/SubmoduleRepository.java)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>EntityNotFoundException</code> if parent Course or Module IDs
+            do not exist in the database.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li>
+                <code>201 Created</code>: Successfully saved the module or
+                submodule.
+              </li>
+              <li><code>400 Bad Request</code>: Missing required fields.</li>
+              <li>
+                <code>404 Not Found</code>: Parent IDs could not be resolved.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>
+                Success: <em>"Module created!"</em> /
+                <em>"Submodule successfully added!"</em>
+              </li>
+              <li>
+                Error:
+                <em>"Failed to create module: Invalid input parameters."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> Handled by React Query's default GET
+            query retry mechanics (3 attempts on network issues).
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Endpoint Rules:</strong> Endpoints prefixed with
+            <code>/api/v1/admin/**</code> are protected on the backend, ensuring
+            access only to users with Admin roles.
+          </li>
+          <li>
+            <strong>Session Validation:</strong> API requests include the
+            logged-in user's Bearer token. Anonymous requests are blocked with a
+            <code>401 Unauthorized</code> response.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/CurriculumAdminController.java</code
+                  >
+                </td>
+                <td><code>createModule()</code></td>
+                <td>
+                  Registers a new Module under a course, returning its database
+                  ID.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/CurriculumAdminController.java</code
+                  >
+                </td>
+                <td><code>createSubmodule()</code></td>
+                <td>Registers a new Submodule under a parent Module ID.</td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/service/CurriculumAdminServiceImpl.java</code
+                  >
+                </td>
+                <td><code>getCourseCurriculum(Long courseId)</code></td>
+                <td>
+                  Queries and returns the nested Module and Submodule trees.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/v1/admin/courses/{id}/modules</code></td>
+                <td>None</td>
+                <td><code>List&lt;ModuleResponseDTO&gt;</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Fetches the structured curriculum outline for a course.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/admin/courses/{id}/modules</code></td>
+                <td><code>ModuleRequestDTO</code></td>
+                <td><code>ModuleResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Creates a new module under the specified course ID.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td>
+                  <code
+                    >/api/v1/admin/courses/{id}/modules/{mid}/submodules</code
+                  >
+                </td>
+                <td><code>SubmoduleRequestDTO</code></td>
+                <td><code>SubmoduleResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>
+                  Creates a submodule (lesson) under the specified module ID.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Course Draft persistence:</strong> Step 2 requires a valid
+            <code>courseId</code> generated from Step 1.
+          </li>
+          <li>
+            <strong>React Query cache:</strong> Invalidates query caches to
+            automatically refresh structural trees.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Drag-and-Drop Reordering:</strong> Implement drag-and-drop
+            sequencing (using `@hello-pangea/dnd`) to let admins reorder
+            curriculum items dynamically.
+          </li>
+          <li>
+            <strong>Curriculum Copying:</strong> Allow admins to copy existing
+            curriculum structures from other courses to speed up creation.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>
+            Supports creating nested course structures (Modules and Submodules).
+          </li>
+          <li>Restricts modifications to users with Admin roles.</li>
+          <li>
+            Optimized with automatic frontend caching invalidation on updates.
+          </li>
+          <li>
+            Uses cascade deletion to clean up child submodules when a module is
+            deleted.
+          </li>
+          <li>Maintains sequencing in the database with order indexes.</li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 6 -->
+      <!-- ========================================== -->
+      <section id="feature-6" class="section-card">
+        <h2>6. Content/Lesson Management</h2>
+        <p>
+          Step 3 of the course wizard. This interactive view allows Admins to
+          attach various educational content blocks (such as text, Markdown,
+          code, videos, and images) to submodules (lessons).
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Wizard Step 3</div>
+              <div class="node-path">
+                frontend/src/components/CourseWizard/WizardStep3.tsx
+              </div>
+              <div class="node-action">
+                Interactive content dashboard managing block formats and media
+                attachments
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Calls</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Service</div>
+              <div class="node-path">
+                frontend/src/services/contentService.ts
+              </div>
+              <div class="node-action">
+                Axios requests mapping blocks to submodules endpoints
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >HTTP POST (JSON block definition)</span
+            >
+          </div>
+
+          <!-- Row 2: Backend Controller & Service -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.controller.ContentAdminController
+              </div>
+              <div class="node-action">
+                createContent() endpoint parsing incoming JSON content blocks
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Invokes</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.service.ContentAdminServiceImpl
+              </div>
+              <div class="node-action">
+                Maps request, coordinates submodule linkings, evicts caches
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Saves Record</span>
+          </div>
+
+          <!-- Row 3: Repository & DB -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repository</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.repository.ContentRepository
+              </div>
+              <div class="node-action">
+                Standard Spring Data JPA interface returning content entities
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Table: contents</div>
+              <div class="node-action">
+                Persists dynamic block specifications (code, languages,
+                file_urls, types)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Admin accesses Step 3 (frontend/src/components/CourseWizard/WizardStep3.tsx), selecting a lesson submodule from the outline
+↓
+React Query loads existing content blocks using contentService.getContentsBySubmodule(submoduleId) (frontend/src/services/contentService.ts)
+↓
+Admin selects a content type (e.g. Text, Markdown, Code, Video, Image) (frontend/src/components/CourseWizard/WizardStep3.tsx)
+↓
+Inputs content details (text fields, code snippets, video URLs)
+↓
+Clicks "Save Content Block" -&gt; Triggers handleAddBlockSubmit() (frontend/src/components/CourseWizard/WizardStep3.tsx)
+↓
+Calls createBlockMutation.mutate() to dispatch payload via contentService.createContent() (frontend/src/services/contentService.ts)
+↓
+Axios posts data to "/admin/submodules/{submoduleId}/contents"
+↓
+ContentAdminController parses payload (backend/src/main/java/com/geeknito/geeknito_backend/course/controller/ContentAdminController.java) and passes to ContentAdminServiceImpl (backend/src/main/java/com/geeknito/geeknito_backend/course/service/ContentAdminServiceImpl.java)
+↓
+Maps properties and saves ContentEntity through ContentRepository.save() (backend/src/main/java/com/geeknito/geeknito_backend/course/repository/ContentRepository.java)
+↓
+Returns 211 Created response with ContentResponseDTO
+↓
+React Query invalidates ["submoduleContents", submoduleId] query caches
+↓
+View is re-rendered to display the newly added content block in lesson previews (frontend/src/components/CourseWizard/WizardStep3.tsx)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>EntityNotFoundException</code> if submodule IDs are invalid.
+            Throws <code>IllegalArgumentException</code> for unsupported block
+            types.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li>
+                <code>211 Created</code>: Block successfully registered in the
+                database.
+              </li>
+              <li>
+                <code>400 Bad Request</code>: Missing required fields or invalid
+                configurations.
+              </li>
+              <li><code>404 Not Found</code>: Target submodule not found.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>
+                Success: <em>"Content block saved!"</em> /
+                <em>"Block deleted successfully."</em>
+              </li>
+              <li>
+                Error:
+                <em>"Failed to save block: Content text is required."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> React Query retries GET operations on
+            network failures. Saves do not retry automatically.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Access Rules:</strong> Content creation and modifications
+            are restricted to Admins.
+          </li>
+          <li>
+            <strong>Endpoint Gates:</strong> Spring Security blocks
+            modifications on the backend unless request headers contain a valid
+            Admin JWT.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/ContentAdminController.java</code
+                  >
+                </td>
+                <td><code>createContent()</code></td>
+                <td>Saves and links a new content block to a submodule.</td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/service/ContentAdminServiceImpl.java</code
+                  >
+                </td>
+                <td><code>deleteContent(Long id)</code></td>
+                <td>Soft-deletes content records in Postgres.</td>
+              </tr>
+              <tr>
+                <td><code>frontend/.../CourseWizard/WizardStep3.tsx</code></td>
+                <td><code>handleAddBlockSubmit()</code></td>
+                <td>
+                  Validates form fields and triggers React Query save mutations.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>GET</code></td>
+                <td>
+                  <code>/api/v1/admin/submodules/{submoduleId}/contents</code>
+                </td>
+                <td>None</td>
+                <td><code>List&lt;ContentResponseDTO&gt;</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Loads all content blocks linked to a lesson submodule.</td>
+              </tr>
+              <tr>
+                <td><code>POST</code></td>
+                <td>
+                  <code>/api/v1/admin/submodules/{submoduleId}/contents</code>
+                </td>
+                <td><code>ContentRequestDTO</code></td>
+                <td><code>ContentResponseDTO</code></td>
+                <td>Bearer (Admin)</td>
+                <td>Adds and links a new content block to a submodule.</td>
+              </tr>
+              <tr>
+                <td><code>DELETE</code></td>
+                <td><code>/api/v1/admin/contents/{id}</code></td>
+                <td>None</td>
+                <td>Void (204)</td>
+                <td>Bearer (Admin)</td>
+                <td>Soft-deletes content blocks.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Curriculum Module ID:</strong> Requires a valid submodule ID
+            generated from Step 2.
+          </li>
+          <li>
+            <strong>Media Service Uploads:</strong> Image and document blocks
+            depend on file upload endpoints to secure active URLs.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Markdown wysiwyg editor:</strong> Integrate a rich Markdown
+            editor (such as Milkdown or MDX Editor) to make drafting content
+            easier.
+          </li>
+          <li>
+            <strong>Real-time previews:</strong> Show side-by-side renders of
+            HTML/Markdown content blocks as the admin types.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>
+            Supports creating diverse content types (Text, Markdown, Code,
+            Video, and Image).
+          </li>
+          <li>Restricts modifications to Admins.</li>
+          <li>
+            Maintains content block sequencing with sequential ordering keys.
+          </li>
+          <li>Leverages MapStruct to handle clean DTO transformations.</li>
+          <li>Soft-deletes database records to preserve historic integrity.</li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 7 -->
+      <!-- ========================================== -->
+      <section id="feature-7" class="section-card">
+        <h2>7. File &amp; Media Upload System</h2>
+        <p>
+          Handles uploading file attachments. The frontend attempts direct
+          uploads to Cloudinary. If that is not configured, it gracefully falls
+          back to the Spring Boot backend's local file storage.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Frontend components -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend View</div>
+              <div class="node-path">
+                frontend/src/components/CourseWizard/WizardStep3.tsx
+              </div>
+              <div class="node-action">
+                Coordinates file dropzones and handles image preview triggers
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Direct Upload (Default)</span>
+            </div>
+            <div class="flowchart-node">
+              <div class="node-type">External Asset CDN</div>
+              <div class="node-path">Cloudinary API Endpoint</div>
+              <div class="node-action">
+                Receives signed/unsigned form-data and returns direct URLs
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >Fallback path if Cloudinary is not configured</span
+            >
+          </div>
+
+          <!-- Row 2: Frontend Client & Backend Controller -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Frontend Client</div>
+              <div class="node-path">frontend/src/lib/apiClient.ts</div>
+              <div class="node-action">
+                Axios client posting form-data payloads to backend
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">HTTP POST /files/upload</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Controller</div>
+              <div class="node-path">
+                com.geeknito.geeknito_backend.course.controller.FileUploadController
+              </div>
+              <div class="node-action">
+                Saves Multipart files with UUID names to avoid collisions
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Stores Binary</span>
+          </div>
+
+          <!-- Row 3: Server Storage -->
+          <div class="flowchart-row">
+            <div class="flowchart-node database">
+              <div class="node-type">Server Storage</div>
+              <div class="node-path">Server Directory: uploads/</div>
+              <div class="node-action">
+                Local backend directory hosting physical media files
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Admin drops or selects a file in WizardStep3 (frontend/src/components/CourseWizard/WizardStep3.tsx)
+↓
+Checks file configurations to detect Cloudinary cloud settings (frontend/src/components/CourseWizard/WizardStep3.tsx)
+↓
+If Cloudinary is configured:
+   - Packages file and upload preset into browser FormData
+   - Sends a direct browser POST request to the Cloudinary API
+   - Captures the returned Cloudinary secure URL on success
+↓
+If Cloudinary is NOT configured:
+   - Falls back to local storage
+   - Posts FormData with file to Spring Boot's "/api/v1/files/upload" endpoint via Axios/apiClient (frontend/src/lib/apiClient.ts)
+   - FileUploadController backend ensures the "uploads/" directory exists locally (backend/src/main/java/com/geeknito/geeknito_backend/course/controller/FileUploadController.java)
+   - Generates a unique file name using UUID prefixes
+   - Saves file bytes to local disk directory
+   - Returns a structured download URL linking back to the backend
+↓
+Form state is updated with the returned URL to display a file preview (frontend/src/components/CourseWizard/WizardStep3.tsx)
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> Throws
+            <code>IOException</code> on read/write failures. Throws
+            <code>FileNotFoundException</code> if requested files are missing
+            from local directories.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong>
+            <ul>
+              <li>
+                <code>200 OK</code>: Upload succeeded, file URLs generated.
+              </li>
+              <li>
+                <code>400 Bad Request</code>: Attempted uploads with empty files
+                or unsupported parameters.
+              </li>
+              <li>
+                <code>500 Internal Server Error</code>: Read/write disk IO
+                errors.
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Toast Messages:</strong>
+            <ul>
+              <li>Success: <em>"File uploaded successfully!"</em></li>
+              <li>
+                Error:
+                <em>"Failed to upload file. Fallback mechanism triggered."</em>
+                / <em>"Upload failed: File exceeds maximum permitted size."</em>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> If an upload fails, the UI prompts the
+            user with an interactive retry button.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Backend Safeguards:</strong> Files uploaded locally are
+            prefixed with UUIDs to prevent directory traversal and name
+            collision attacks.
+          </li>
+          <li>
+            <strong>Iframe Considerations:</strong> Direct uploads use CORS
+            parameters, allowing browsers to upload safely within sandboxed
+            iframe views.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/FileUploadController.java</code
+                  >
+                </td>
+                <td><code>uploadFile(@RequestParam MultipartFile)</code></td>
+                <td>
+                  Receives files, generates unique UUID filenames, saves files
+                  locally, and returns access URLs.
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <code
+                    >backend/.../course/controller/FileUploadController.java</code
+                  >
+                </td>
+                <td>
+                  <code>downloadFile(@PathVariable String fileName)</code>
+                </td>
+                <td>
+                  Resolves and serves local files back to the client as
+                  downloadable attachments.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontend/.../CourseWizard/WizardStep3.tsx</code></td>
+                <td><code>uploadToCloudinary()</code></td>
+                <td>
+                  Handles direct browser-to-Cloudinary uploads with automatic
+                  fallbacks to local storage.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
+                <th>Response</th>
+                <th>Auth</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>POST</code></td>
+                <td><code>/api/v1/files/upload</code></td>
+                <td><code>MultipartFile</code> (form-data)</td>
+                <td><code>Map&lt;String, String&gt;</code> (url, name)</td>
+                <td>Bearer</td>
+                <td>
+                  Saves files to local folders if Cloudinary is not configured.
+                </td>
+              </tr>
+              <tr>
+                <td><code>GET</code></td>
+                <td><code>/api/v1/files/download/{fileName}</code></td>
+                <td>None</td>
+                <td><code>Resource</code> (File bytes)</td>
+                <td>None</td>
+                <td>
+                  Serves local files back to the client as downloads. Serves all
+                  file bytes.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Cloudinary CDN:</strong> Direct image/attachment uploads
+            depend on valid Cloudinary keys.
+          </li>
+          <li>
+            <strong>Server Disk Storage:</strong> Local storage fallbacks rely
+            on file system write permissions.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Image compression:</strong> Add client-side image
+            compression before upload to reduce size.
+          </li>
+          <li>
+            <strong>File Type validation:</strong> Whitelist file formats (such
+            as PDFs and images) to block malicious file uploads.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>Supports direct browser uploads to Cloudinary CDN.</li>
+          <li>Includes a local storage fallback using Spring Boot.</li>
+          <li>Prefixes local files with unique UUIDs to prevent collisions.</li>
+          <li>Features a customizable size validation guard.</li>
+          <li>Generates standard downloadable file links.</li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 8 -->
+      <!-- ========================================== -->
+      <section id="feature-8" class="section-card">
+        <h2>8. Redis Caching Strategy</h2>
+        <p>
+          Implements caching configurations inside Spring Boot using Redis cache
+          pools. Caches heavy queries (such as catalogs, category lists, and
+          lesson content) with custom expiration times (TTLs) to boost server
+          performance.
+        </p>
+
+        <h3>1. Data Flow &amp; File Architecture (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Client Calls & Spring Caching Gate -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Client Application</div>
+              <div class="node-path">Client API calls</div>
+              <div class="node-action">
+                Fires search and discover fetch loops repeatedly
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">Inbound Request</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Spring Cache Interceptor</div>
+              <div class="node-path">@EnableCaching Aspects</div>
+              <div class="node-action">
+                Intercepts calls, checking matching cache pools and keys
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >Check matching cache bucket (e.g. course-catalog)</span
+            >
+          </div>
+
+          <!-- Row 2: Cache Hit Check -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Cache Pool hit?</div>
+              <div class="node-path">Redis Cache Manager</div>
+              <div class="node-action">
+                If HIT: instantly returns stored serialized data (JSON)
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">On Cache Miss</span>
+            </div>
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Service</div>
+              <div class="node-path">Spring Service Methods</div>
+              <div class="node-action">
+                Runs slow business logic, calculating counts and lists
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Querying Postgres</span>
+          </div>
+
+          <!-- Row 3: Repository & Database -->
+          <div class="flowchart-row">
+            <div class="flowchart-node backend">
+              <div class="node-type">Backend Repositories</div>
+              <div class="node-path">JPA Repositories</div>
+              <div class="node-action">
+                Queries raw DB records from physical tables
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↓</span>
+              <span class="flowchart-label">SQL</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Physical Tables</div>
+              <div class="node-action">
+                Reads records and populates Redis cache before returning payload
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Feature Entry Point &amp; Lifecycle</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+Spring Boot bootup triggers RedisConfig initialization (backend/src/main/java/com/geeknito/geeknito_backend/config/RedisConfig.java)
+↓
+Spring loads @EnableCaching, activating cache manager pools
+↓
+Client executes GET request to fetch course catalog
+↓
+CourseCatalogServiceImpl.getCatalogCourses() (backend/src/main/java/com/geeknito/geeknito_backend/course/service/CourseCatalogServiceImpl.java) is intercepted by Spring's Cacheable Aspect
+↓
+Checks Redis cache "course-catalog" for matching pageable keys
+↓
+If Cache HIT:
+   - Returns serialized cached JSON instantly, bypassing Postgres queries
+↓
+If Cache MISS:
+   - Executes repository SQL queries against Postgres
+   - Binds resulting rows, saving them to Redis under key parameters
+   - Returns fresh database records to the client
+↓
+Admin updates course information (PUT/POST/DELETE) via CourseAdminServiceImpl (backend/src/main/java/com/geeknito/geeknito_backend/course/service/CourseAdminServiceImpl.java) or CategoryAdminServiceImpl (backend/src/main/java/com/geeknito/geeknito_backend/category/service/CategoryAdminServiceImpl.java)
+↓
+Service methods are intercepted by @CacheEvict
+↓
+Deletes corresponding key structures from Redis to maintain data consistency
+      </pre
+        >
+
+        <h3>3. Error Handling &amp; UI Feedback</h3>
+        <ul>
+          <li>
+            <strong>Backend Exceptions:</strong> If Redis is offline, the custom
+            <code>CacheErrorHandler</code> intercepts runtime failures, logs
+            warnings, and falls back to Postgres.
+          </li>
+          <li>
+            <strong>HTTP Status Codes:</strong> No change in HTTP responses;
+            cache operations run transparently on the backend.
+          </li>
+          <li>
+            <strong>Toast Messages:</strong> None shown to the user. Caching is
+            a background performance enhancement.
+          </li>
+          <li>
+            <strong>Retry Logic:</strong> On connection timeouts, Redis
+            connection pools attempt automatic reconnects.
+          </li>
+        </ul>
+
+        <h3>4. Security &amp; Authorization</h3>
+        <ul>
+          <li>
+            <strong>Serialization Safeguards:</strong> Uses
+            <code>GenericJackson2JsonRedisSerializer</code> with type
+            configurations (NON_FINAL) to safely encode entities to JSON
+            structures.
+          </li>
+          <li>
+            <strong>Secure Connections:</strong> Redis connection URLs are
+            populated using environment secrets, preventing sensitive
+            credentials leaks.
+          </li>
+        </ul>
+
+        <h3>5. Important Classes &amp; Methods</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Method Name</th>
+                <th>Brief Explanation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>backend/.../config/RedisConfig.java</code></td>
+                <td><code>cacheManager(RedisConnectionFactory)</code></td>
+                <td>
+                  Configures Redis serialization, serializer engines, and custom
+                  cache TTL allocations.
+                </td>
+              </tr>
+              <tr>
+                <td><code>backend/.../config/RedisConfig.java</code></td>
+                <td><code>errorHandler()</code></td>
+                <td>
+                  Custom error handler that intercepts connection failures,
+                  falling back to database reads.
+                </td>
+              </tr>
+              <tr>
+                <td><code>backend/.../config/StartupValidator.java</code></td>
+                <td><code>run()</code></td>
+                <td>
+                  Validates the active Redis connection at server boot, logging
+                  configurations.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>6. API Details</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Cache Pool Name</th>
+                <th>Default TTL</th>
+                <th>Eviction Triggers</th>
+                <th>Cached Classes</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>course-catalog</code></td>
+                <td>30 Minutes</td>
+                <td>Admin creates, updates, or deletes courses.</td>
+                <td><code>PageImpl&lt;CourseCatalogCardDTO&gt;</code></td>
+                <td>Uses custom Page deserialization helpers.</td>
+              </tr>
+              <tr>
+                <td><code>course-details</code></td>
+                <td>1 Hour</td>
+                <td>Admin updates or deletes specific courses.</td>
+                <td><code>CourseCatalogDetailDTO</code></td>
+                <td>Cached by course slug.</td>
+              </tr>
+              <tr>
+                <td><code>categories</code></td>
+                <td>24 Hours</td>
+                <td>Admin creates, updates, or deletes categories.</td>
+                <td><code>List&lt;CategoryResponseDTO&gt;</code></td>
+                <td>Evicts on category additions.</td>
+              </tr>
+              <tr>
+                <td><code>curriculum</code></td>
+                <td>1 Hour</td>
+                <td>Admin creates modules or submodules.</td>
+                <td><code>List&lt;ModuleResponseDTO&gt;</code></td>
+                <td>Cached by course ID parameters.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>7. Feature Dependencies</h3>
+        <ul>
+          <li>
+            <strong>Docker Redis Server:</strong> Requires an active Redis
+            instance. Fallbacks allow server operations to continue if Redis is
+            offline.
+          </li>
+          <li>
+            <strong>Jackson Polymorphic Engine:</strong> Serialization relies on
+            Jackson to store type attributes correctly.
+          </li>
+        </ul>
+
+        <h3>8. Possible Improvements</h3>
+        <ul>
+          <li>
+            <strong>Prefix Namespacing:</strong> Prefix cache keys with
+            environments (e.g. `lms:dev:course-catalog`) to support shared Redis
+            nodes safely.
+          </li>
+          <li>
+            <strong>Selective Evictions:</strong> Refine evictions to delete
+            specific keys instead of clearing entire cache names on updates.
+          </li>
+        </ul>
+
+        <h3>9. Summary</h3>
+        <ul>
+          <li>
+            Implements high-performance caching configurations using Redis.
+          </li>
+          <li>
+            Provides custom TTL expiration structures for different data types.
+          </li>
+          <li>
+            Features a robust error handling fallback to ensure zero-downtime
+            database reads if Redis is offline.
+          </li>
+          <li>
+            Maintains accurate data consistency using Spring `@CacheEvict`
+            annotations.
+          </li>
+          <li>
+            Uses custom deserializers to support complex Spring Page
+            implementations.
+          </li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- FEATURE 9 -->
+      <!-- ========================================== -->
+      <section id="feature-9" class="section-card">
+        <h2>9. Hybrid Mock / Live PostgreSQL Engine Architecture</h2>
+        <p>
+          Specifies how the frontend dynamically switches its API and
+          persistence layer between offline-first client-side emulation and
+          real-world PostgreSQL live-connection state. This architecture
+          completely prevents data desynchronization by decoupling client-side
+          state from LocalStorage when communicating with the real database.
+        </p>
+
+        <h3>1. Data Flow &amp; Mode Selector (Flowchart)</h3>
+        <div class="flowchart-container">
+          <!-- Row 1: Env variable check -->
+          <div class="flowchart-row">
+            <div class="flowchart-node">
+              <div class="node-type">Environment Variable</div>
+              <div class="node-path">.env / VITE_USE_MOCK_API</div>
+              <div class="node-action">
+                Toggles API mode at runtime ("true" or "false")
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label"
+              >Evaluated by AppContext &amp; ApiClient</span
+            >
+          </div>
+
+          <!-- Row 2: Mode Fork -->
+          <div class="flowchart-row">
+            <!-- Left Fork: Mock Mode -->
+            <div class="flowchart-node">
+              <div class="node-type">Mock Mode (VITE_USE_MOCK_API=true)</div>
+              <div class="node-path">frontend/src/lib/apiClient.ts</div>
+              <div class="node-action">
+                Intercepts requests and saves/restores state via LocalStorage
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Branch</span>
+            </div>
+            <!-- Right Fork: Live Mode -->
+            <div class="flowchart-node backend">
+              <div class="node-type">Live Mode (VITE_USE_MOCK_API=false)</div>
+              <div class="node-path">
+                backend/src/main/resources/application.yml
+              </div>
+              <div class="node-action">
+                Direct HTTP requests to PostgreSQL + Redis Cache Server
+              </div>
+            </div>
+          </div>
+
+          <div class="flowchart-arrow vertical">
+            <span>↓</span>
+            <span class="flowchart-label">Persistence Triggers</span>
+          </div>
+
+          <!-- Row 3: Final Storage Targets -->
+          <div class="flowchart-row">
+            <div class="flowchart-node database">
+              <div class="node-type">Browser LocalStorage</div>
+              <div class="node-path">
+                educorp_categories &amp; educorp_courses
+              </div>
+              <div class="node-action">
+                Stores serialized JSON files solely for browser-bound mock
+                states
+              </div>
+            </div>
+            <div class="flowchart-arrow horizontal">
+              <span>↔</span>
+              <span class="flowchart-label">Decoupled Stores</span>
+            </div>
+            <div class="flowchart-node database">
+              <div class="node-type">PostgreSQL Database</div>
+              <div class="node-path">Relational Tables</div>
+              <div class="node-action">
+                Houses real records (courses, categories, curriculum, users)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>2. Mode Lifecycles &amp; Operations</h3>
+        <pre
+          style="
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #1e293b;
+          "
+        >
+[MOCK MODE ACTIVE]
+1. AppProvider detects VITE_USE_MOCK_API === "true"
+2. Reads educorp_categories and educorp_courses from LocalStorage (or seeds from initialData.ts)
+3. Modifications (Create, Update, Delete) are applied client-side and saved immediately back to LocalStorage
+4. Allows fully offline client demonstrations without running the backend container
+
+[LIVE MODE ACTIVE]
+1. AppProvider detects VITE_USE_MOCK_API === "false"
+2. Bypasses and completely ignores LocalStorage cache records
+3. Background TanStack Query routines dispatch dynamic HTTP requests straight to PostgreSQL via the Express server proxy
+4. Create/Update/Delete actions trigger backend persistence; failures raise instant error toasts without polluting state
+      </pre
+        >
+
+        <h3>3. Technical Details &amp; Configurations</h3>
+        <ul>
+          <li>
+            <strong>State Decoupling:</strong> Standard LocalStorage read/write
+            triggers in <code>AppContext.tsx</code> are strictly wrapped inside
+            conditional checks (<code>if (isMockMode)</code>). In Live Mode, the
+            browser state is populated purely from backend API payloads.
+          </li>
+          <li>
+            <strong>Forensic Diagnosis Safeguard:</strong> This hybrid engine
+            prevents "false-positive" rendering where the UI displays old
+            LocalStorage caches while failing to connect to the PostgreSQL
+            database.
+          </li>
+        </ul>
+
+        <h3>4. important files &amp; configurations</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>File Path (Root)</th>
+                <th>Key Implementation</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>frontend/src/context/AppContext.tsx</code></td>
+                <td>
+                  <code
+                    >const isMockMode = import.meta.env.VITE_USE_MOCK_API !==
+                    "false";</code
+                  >
+                </td>
+                <td>
+                  Guards state initialization and prevents LocalStorage writes
+                  when Live mode is on.
+                </td>
+              </tr>
+              <tr>
+                <td><code>frontend/src/lib/apiClient.ts</code></td>
+                <td>
+                  <code
+                    >const isMockMode = import.meta.env.VITE_USE_MOCK_API !==
+                    "false";</code
+                  >
+                </td>
+                <td>
+                  Configures request intercepts and defines mock routing
+                  overrides.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>5. Summary</h3>
+        <ul>
+          <li>
+            Supports fully automated toggling between client-side LocalStorage
+            emulation and a live backend.
+          </li>
+          <li>
+            Bypasses LocalStorage completely in Live mode to prevent dirty cache
+            reads.
+          </li>
+          <li>
+            Raises real-time error toasts when backend operations fail instead
+            of silently falling back to mock data.
+          </li>
+          <li>
+            Provides developers with clear runtime visualization of database
+            synchronization.
+          </li>
+        </ul>
+        <a class="back-to-top" href="#top">↑ Back to Table of Contents</a>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+spring:
+  # Database Configuration (Connecting to local PostgreSQL)
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/enterprise_lms_db}
+    username: ${SPRING_DATASOURCE_USERNAME:lms_admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin_secure_pass_2026}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: HikariPool-Local
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 30000
+      connection-timeout: 20000
+
+  # JPA & Hibernate Settings
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate # Enforces strict schema matching without altering tables
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        generate_statistics: true
+
+  # Flyway Configuration for local schema control
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: "1"
+
+  # Redis Configuration for local session and query caching
+  data:
+    redis:
+      url: ${SPRING_REDIS_URL:${REDIS_URL:redis://localhost:6379}}
+      timeout: 2000
+
+# Logging Configurations for local development
+logging:
+  level:
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.springframework.cache: TRACE
+    com.geeknito.geeknito_backend: DEBUG

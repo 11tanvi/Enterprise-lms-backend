@@ -1,0 +1,6 @@
+{
+  "name": "EduCorp LMS",
+  "description": "An enterprise-grade learning management system and course authoring suite featuring category management, a multi-step course creation wizard, interactive curriculum builder, block editor, and SEO settings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

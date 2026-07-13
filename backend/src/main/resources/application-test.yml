@@ -1,0 +1,32 @@
+spring:
+  # Database Configuration for isolated unit/integration tests
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/enterprise_lms_test_db}
+    username: ${SPRING_DATASOURCE_USERNAME:lms_admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin_secure_pass_2026}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA & Hibernate Settings
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  # Flyway Configuration for tests
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: "1"
+
+  # Redis Configuration (mocked or low timeouts for testing)
+  data:
+    redis:
+      url: ${SPRING_REDIS_URL:redis://localhost:6379}
+      timeout: 500
+
+# Logging Configurations for tests (keep quiet)
+logging:
+  level:
+    org.springframework: WARN
+    com.geeknito.geeknito_backend: INFO
