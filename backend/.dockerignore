@@ -1,0 +1,24 @@
+# Ignore local build directories
+target/
+bin/
+build/
+
+# Ignore IDE settings
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Ignore Git
+.git/
+.gitignore
+
+# Ignore Docker files inside build context
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
