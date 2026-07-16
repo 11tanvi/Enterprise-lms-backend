@@ -30,6 +30,8 @@ import { Toast } from "./components/Toast";
 import { Login } from "./pages/Login";
 import { Forbidden } from "./pages/Forbidden";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { EventsPage } from "./modules/events/pages/EventsPage"; 
+
 
 // Authenticated Layout wrapper with the Sidebar and Header
 const MainLayout: React.FC = () => {
@@ -100,6 +102,9 @@ const AppContent: React.FC = () => {
         >
           {/* Base Redirection */}
           <Route path="/" element={<Navigate to="/courses" replace />} />
+
+          {/* EVENTS PAGE - Now securely inside the layout wrapper! */}
+          <Route path="/events" element={<EventsPage />} />
 
           {/* Catalog: Shared access for Admin & Student */}
           <Route path="/courses" element={<CourseCatalogView />} />

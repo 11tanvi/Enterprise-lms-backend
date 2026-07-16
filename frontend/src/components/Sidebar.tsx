@@ -13,6 +13,7 @@ import {
   ClipboardList,
   BarChart3,
   Users,
+  Calendar, // <-- Added the Calendar icon here for your Events button
 } from "lucide-react";
 import { BRAND_CONFIG } from "../lib/brandConfig";
 
@@ -187,6 +188,47 @@ export const Sidebar: React.FC = () => {
             </>
           )}
         </NavLink>
+
+        {/* --- NEW CAMPUS EVENTS LINK STARTS HERE --- */}
+        <NavLink
+          to="/events"
+          onClick={() => setMobileSidebarOpen(false)}
+          className={({ isActive }) =>
+            `w-full flex items-center gap-4 px-6 py-3 text-left transition-all duration-200 group relative ${
+              isActive
+                ? "border-l-4 border-[#76f7e8] bg-white/10 text-[#76f7e8] font-semibold"
+                : "text-white/70 hover:text-white hover:bg-white/5"
+            } ${sidebarCollapsed ? "md:px-0 md:justify-center md:border-l-0" : ""}`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              {sidebarCollapsed && isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#76f7e8] hidden md:block" />
+              )}
+
+              <Calendar
+                className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 shrink-0 ${isActive ? "text-[#76f7e8]" : "text-white/60 group-hover:text-white"}`}
+              />
+              <span
+                className={`text-sm font-medium transition-all duration-300 ${sidebarCollapsed ? "md:opacity-0 md:w-0 md:hidden" : "block"}`}
+              >
+                Campus Events
+              </span>
+              {isActive && !sidebarCollapsed && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-[#76f7e8]" />
+              )}
+
+              {/* Hover Tooltip when collapsed */}
+              {sidebarCollapsed && (
+                <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-gray-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-md z-50 font-medium hidden md:block">
+                  Campus Events
+                </div>
+              )}
+            </>
+          )}
+        </NavLink>
+        {/* --- NEW CAMPUS EVENTS LINK ENDS HERE --- */}
 
         {/* Admin-Only navigation item */}
         {userRole === "admin" && (

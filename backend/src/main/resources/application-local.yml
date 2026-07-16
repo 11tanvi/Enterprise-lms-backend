@@ -1,9 +1,9 @@
 spring:
   # Database Configuration (Connecting to local PostgreSQL)
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/enterprise_lms_db}
-    username: ${SPRING_DATASOURCE_USERNAME:lms_admin}
-    password: ${SPRING_DATASOURCE_PASSWORD:admin_secure_pass_2026}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/lms_xebia_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:Bgpjmgt24@}
     driver-class-name: org.postgresql.Driver
     hikari:
       pool-name: HikariPool-Local
